@@ -6,6 +6,10 @@
  */
 package beelbalam1;
 
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 
 /**
@@ -138,10 +142,10 @@ public class PanelRegistro extends javax.swing.JPanel {
                 (txtContrasenia.getText().length()>17)||
                 (txtContrasenia.getText().isEmpty())){
             JOptionPane.showMessageDialog(null, "¡Error! Alguno o varios datos son incorrectos (demasiado largo o vacio)");
-            txtNombreUsuario.setText(" ");
-            txtCorreo.setText(" ");
-            txtNumCelular.setText(" ");
-            txtContrasenia.setText(" ");
+            txtNombreUsuario.setText("");
+            txtCorreo.setText("");
+            txtNumCelular.setText("");
+            txtContrasenia.setText("");
             test = true;
         }
         if(test == false){
@@ -149,13 +153,34 @@ public class PanelRegistro extends javax.swing.JPanel {
             cont = txtContrasenia.getText();
             numCel = txtNumCelular.getText();
             correo = txtCorreo.getText();
-
-            //PARA IR AL PANEL DE TARJETA 
-            panelTarjeta = new PanelTarjeta();
-            panelTarjeta.setBounds(this.getBounds());
-            this.removeAll();
-            this.add(panelTarjeta);
-            this.updateUI();     
+            //PARA VERIFICAR QUE EL USUARIO NO EXISTA
+            try{
+                Connection miConexion = DriverManager.getConnection("jdbc:sqlserver://LAPTOP-8M3QSOFP\\SQLEXPRESS:1433;databaseName=BEEL_BALAM","sa", "llatitabebe");//2020640576
+                CallableStatement resConexion;
+                resConexion = miConexion.prepareCall("{call VERIFICAR_USUARIO(?)}");
+                resConexion.setString(1,nUsuario);
+                ResultSet rs = resConexion.executeQuery();
+                if(rs.next()){
+                    System.out.println("Ya existe ese usuario");
+                    JOptionPane.showMessageDialog(null, "El usuario que ha ingresado ya existe, por favor intente con uno nuevo");                                           
+                    txtNombreUsuario.setText("");
+                    txtCorreo.setText("");
+                    txtNumCelular.setText("");
+                    txtContrasenia.setText("");
+                }else{
+                    //System.out.println("No existe ese usuario");
+                    //PARA IR AL PANEL DE TARJETA 
+                    panelTarjeta = new PanelTarjeta();
+                    panelTarjeta.setBounds(this.getBounds());
+                    this.removeAll();
+                    this.add(panelTarjeta);
+                    this.updateUI();
+                }
+                //JOptionPane.showMessageDialog(null, "Se ha agreago correctamente al usuario");                                           
+            }catch(Exception e){
+                //System.out.println("Ha habido un error al crear al usuario");
+                System.out.println(e);
+            }
         }        
     }//GEN-LAST:event_btnAgregarTarjetaActionPerformed
 

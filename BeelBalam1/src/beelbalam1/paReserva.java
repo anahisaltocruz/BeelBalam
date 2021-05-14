@@ -11,4 +11,6 @@ package beelbalam1;
  */
 public class paReserva {
     private String pNombre;
+    private String sNombre;
+    
 }

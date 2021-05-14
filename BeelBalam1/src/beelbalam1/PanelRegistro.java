@@ -19,7 +19,11 @@ public class PanelRegistro extends javax.swing.JPanel {
      */
     PanelTarjeta panelTarjeta;
     //PARA ALMACENAR LOS DATOS DEL NUEVO USUARIO 
-    public ProcCrearUsuario paCrearUsuario = new ProcCrearUsuario();  
+    //public ProcCrearUsuario paCrearUsuario = new ProcCrearUsuario();  
+    public static String nUsuario;
+    public static String cont;
+    public static String numCel;
+    public static String correo; 
     
     public PanelRegistro() {
         initComponents();
@@ -141,18 +145,17 @@ public class PanelRegistro extends javax.swing.JPanel {
             test = true;
         }
         if(test == false){
-            paCrearUsuario.setNombreU(txtNombreUsuario.getText());
-            paCrearUsuario.setContraseniaU(txtContrasenia.getText());
-            paCrearUsuario.setNumCelularU(txtNumCelular.getText());
-            paCrearUsuario.setCorreoU(txtCorreo.getText());
-            
+            nUsuario = txtNombreUsuario.getText();
+            cont = txtContrasenia.getText();
+            numCel = txtNumCelular.getText();
+            correo = txtCorreo.getText();
 
             //PARA IR AL PANEL DE TARJETA 
             panelTarjeta = new PanelTarjeta();
             panelTarjeta.setBounds(this.getBounds());
             this.removeAll();
             this.add(panelTarjeta);
-            this.updateUI();
+            this.updateUI();     
         }        
     }//GEN-LAST:event_btnAgregarTarjetaActionPerformed
 

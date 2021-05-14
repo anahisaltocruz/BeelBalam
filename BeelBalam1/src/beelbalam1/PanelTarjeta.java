@@ -18,8 +18,8 @@ public class PanelTarjeta extends javax.swing.JPanel {
      */
     Window PanelWindow;
     //PARA ALMACENAR LOS DATOS (DE TARJETA) DEL NUEVO USUARIO 
-    //ProcCrearUsuario paCrearUsuario;
-    PanelRegistro panReg = new PanelRegistro();
+    ProcCrearUsuario paCrearUsuario = new ProcCrearUsuario();
+    public static PanelRegistro panReg = new PanelRegistro();
     public PanelTarjeta() {
         initComponents();
         
@@ -187,31 +187,39 @@ public class PanelTarjeta extends javax.swing.JPanel {
             txtAnioTarjeta.setText(" ");
             txtCVCTarjeta.setText(" ");
         }else{
-            //LLAMAMOS AL PROC ALMACENADO PARA QUE CREE USUARIO 
-            panReg.paCrearUsuario.setNumeroT(txtNumTarjeta.getText());
-            //de esta linea se tiene que "partir en dos" para obtener el segundo nombre
-            //si es que hay ;-;
+            //System.out.println("nusuario: "+panReg.nUsuario);
+            paCrearUsuario.setNombreU(panReg.nUsuario);
+            paCrearUsuario.setContraseniaU(panReg.cont);
+            paCrearUsuario.setNumCelularU(panReg.numCel);
+            paCrearUsuario.setCorreoU(panReg.correo);
+            
+            paCrearUsuario.setNumeroT(txtNumTarjeta.getText());
+            
             String nombreRecibido = txtNombreRepTarjeta.getText();
             
             String[] nombres = nombreRecibido.split("\\s+");
             if(nombres.length == 1){
-                panReg.paCrearUsuario.setNombreT(txtNombreRepTarjeta.getText());
-                panReg.paCrearUsuario.setSegNombreT(" ");
+                paCrearUsuario.setNombreT(txtNombreRepTarjeta.getText());
+                paCrearUsuario.setSegNombreT(" ");
                 System.out.println("Solo un nombre: "+nombres[0]);
             }else if(nombres.length == 2){
-                panReg.paCrearUsuario.setNombreT(nombres[0]);
-                panReg.paCrearUsuario.setSegNombreT(nombres[1]);
+                paCrearUsuario.setNombreT(nombres[0]);
+                paCrearUsuario.setSegNombreT(nombres[1]);
                 System.out.println("Primer nombre: "+nombres[0]);
                 System.out.println("Segundo nombre: "+nombres[1]);
             }
-            //paCrearUsuario.setSegNombreT();//pendiente de resolver
-            panReg.paCrearUsuario.setPrimerApT(txtApPaternoTarjeta.getText());
-            panReg.paCrearUsuario.setSegApT(txtApMaternoNumTarjeta.getText());
-            panReg.paCrearUsuario.setFechaT(Integer.parseInt(txtMesTarjeta.getText().concat(txtAnioTarjeta.getText())));
-            panReg.paCrearUsuario.setCvcT(Integer.parseInt(txtCVCTarjeta.getText()));
-            panReg.paCrearUsuario.setPtosAcum(0);
-            panReg.paCrearUsuario.hacerConexion();
-            //Verificar que se haya podido generar usuario
+            paCrearUsuario.setPrimerApT(txtApPaternoTarjeta.getText());
+            paCrearUsuario.setSegApT(txtApMaternoNumTarjeta.getText());
+            paCrearUsuario.setFechaT(Integer.parseInt(txtMesTarjeta.getText().concat(txtAnioTarjeta.getText())));
+            paCrearUsuario.setCvcT(Integer.parseInt(txtCVCTarjeta.getText()));
+            paCrearUsuario.setPtosAcum(0);
+            //LLAMAMOS AL PROC ALMACENADO PARA QUE CREE EL USUARIO 
+            paCrearUsuario.hacerConexion();
+            //Verificaaaaar que se haya podido generar usuario
+            /*if(se creo correctamente el usuario)
+                llama a window
+            else if(el usuario ya existia)
+                se regresa al panel de registrar usuario*/
             PanelWindow = new Window();
             PanelWindow.setBounds(this.getBounds());
             this.removeAll();

@@ -5,6 +5,13 @@
  */
 package beelbalam1;
 
+import java.lang.*;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import java.sql.*;
+import java.util.*;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Anahi SC
@@ -12,15 +19,13 @@ package beelbalam1;
 public class PantallaInicio3 extends javax.swing.JFrame {
     
     PanelRegistro panelReg;
-    //PanelCompras2 panelComp;
-    //PanelApp panelApp;
     Window panelWindow;
-    /**
-     * Creates new form PantallaInicio3
-     */
+    Connection conex;
+    CallableStatement stm;
+    ResultSet rs;
+    
     public PantallaInicio3() {
         initComponents();
-        //this.btnRegresar.setVisible(false);
     }
 
     /**
@@ -156,11 +161,43 @@ public class PantallaInicio3 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnIniciarSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarSActionPerformed
-        panelWindow = new Window();
-        panelWindow.setBounds(panelInic.getBounds());
-        panelInic.removeAll();
-        panelInic.add(panelWindow);
-        panelInic.updateUI();
+        String nombre = null;
+        String contra = null;
+        
+        try {
+            //Conecta
+            conex = DriverManager.getConnection("jdbc:sqlserver://DESKTOP-KT6L84G:1433;databaseName=BEEL_BALAM", "sa", "2020640576");
+            //Busca el usuario
+            stm = conex.prepareCall("{call VALIDAR_INICIOSESION(?)}");
+            String uIS = this.txtUsuario.getText();
+            stm.setString(1, uIS);
+            rs = stm.executeQuery();
+            if(rs.next()){ //si encuentra el usuario, verifica que la contraseña sea correcta
+                contra = rs.getString(1);
+                System.out.println(contra);
+                if(contra.equals(this.txtContra.getText())){
+                    //System.out.println("Exito!");
+                    //Cambio de panel
+                    panelWindow = new Window();
+                    panelWindow.setUser(this.txtUsuario.getText());
+                    panelWindow.setBounds(panelInic.getBounds());
+                    panelInic.removeAll();
+                    panelInic.add(panelWindow);
+                    panelInic.updateUI();
+                    
+                }else{
+                    JOptionPane.showMessageDialog(null, "Contraseña incorrecta! Intente de nuevo");
+                }
+            }else{
+                JOptionPane.showMessageDialog(null, "Usuario no encontrado");
+            }
+            rs.close();
+            stm.close();
+            
+        } catch (SQLException ex) {
+            System.out.println("ERROR");
+        }
+        
     }//GEN-LAST:event_btnIniciarSActionPerformed
 
     private void btnRegistrateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrateActionPerformed

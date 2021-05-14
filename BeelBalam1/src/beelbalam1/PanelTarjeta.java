@@ -16,6 +16,7 @@ public class PanelTarjeta extends javax.swing.JPanel {
     /**
      * Creates new form PanelTarjeta
      */
+
     Window PanelWindow;
     //PARA ALMACENAR LOS DATOS (DE TARJETA) DEL NUEVO USUARIO 
     ProcCrearUsuario paCrearUsuario = new ProcCrearUsuario();

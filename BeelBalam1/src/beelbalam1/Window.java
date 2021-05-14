@@ -7,6 +7,7 @@ package beelbalam1;
 
 import java.awt.event.ItemEvent;
 import javax.swing.*;
+import java.sql.*;
 
 
 /**
@@ -15,9 +16,16 @@ import javax.swing.*;
  */
 public class Window extends javax.swing.JPanel {
 
-    ProcEditarUsuario editU;
     ComboBoxModel EnumSt;
     ComboBoxModel EnumFi;
+    PanelTarjeta2 panelTarjeta;
+    
+    String user; //usuario con el que se inició sesión
+    String oldTarjeta;
+    
+    Connection conex;
+    CallableStatement stm;
+    ResultSet rs;
     /**
      * Creates new form Window
      */
@@ -31,6 +39,7 @@ public class Window extends javax.swing.JPanel {
         this.txtDNumCel.setEditable(false);
         this.txtDNumTarjeta.setEditable(false);
         this.txtDPtosAcum.setEditable(false);
+        this.txtDPassword.setEditable(false);
     }
 
     /**
@@ -43,6 +52,11 @@ public class Window extends javax.swing.JPanel {
     private void initComponents() {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel22 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        btnAcuerdo = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -57,6 +71,8 @@ public class Window extends javax.swing.JPanel {
         txtDNumCel = new javax.swing.JTextField();
         txtDPtosAcum = new javax.swing.JTextField();
         txtDNumTarjeta = new javax.swing.JTextField();
+        jLabel21 = new javax.swing.JLabel();
+        txtDPassword = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
@@ -89,6 +105,52 @@ public class Window extends javax.swing.JPanel {
         jTable1 = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         btnCerrarSesion = new javax.swing.JButton();
+
+        jPanel5.setBackground(new java.awt.Color(255, 102, 102));
+
+        jLabel22.setFont(new java.awt.Font("Cambria Math", 3, 24)); // NOI18N
+        jLabel22.setText("Aviso de privacidad");
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jTextArea1.setText("El tratamiento de datos personales se realiza de conformidad con lo dispuesto en los artículos 8 de la Ley Orgánica de la Administración Pública Fe\nderal, (última reforma publicada en el Diario Oficial de la Federación, el diecinueve de mayo de dos mil diecisiete), 28, fracción III, del Reglamento \nde la Oficina de la Presidencia de la República (publicado en Diario Oficial de la Federación el nueve de diciembre de dos mil diecinueve), 117, fra\ncción V de la Ley Federal de Transparencia y Acceso a la Información Pública (última reforma publicada en el Diario Oficial de la Federación el veinti\nsiete de enero de dos mil diecisiete), 22, fracción II, 24, 28, 66, fracción I, 69 y 70, fracción II de la Ley General de Protección de Datos Persona\nles en Posesión de Sujetos Obligados.\n\nLos datos personales que usted proporcione podrán ser susceptibles, en su caso, de ser transferidos al responsable competente, en términos del \nnumeral 13, fracción V, del Reglamento de la Oficina de la Presidencia de la República, (última reforma publicada el uno de octubre de dos mil quince)\n, en concordancia con el diverso 117, fracción V de la Ley Federal de Transparencia y Acceso a la Información Pública (última reforma publicada en \nel Diario Oficial de la Federación el veintisiete de enero de dos mil diecisiete).");
+        jScrollPane3.setViewportView(jTextArea1);
+
+        btnAcuerdo.setText("Estoy de acuerdo");
+        btnAcuerdo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAcuerdoActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap(39, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnAcuerdo)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 574, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(158, 158, 158))
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(238, 238, 238)
+                .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(33, 33, 33)
+                .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnAcuerdo)
+                .addContainerGap(125, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Aviso Privacidad", jPanel5);
 
         jPanel1.setBackground(new java.awt.Color(204, 204, 255));
 
@@ -126,35 +188,45 @@ public class Window extends javax.swing.JPanel {
             }
         });
 
+        jLabel21.setText("CONTRASEÑA:");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(201, 201, 201)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(70, Short.MAX_VALUE)
+                .addContainerGap(192, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 358, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(122, 122, 122)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(btnEdit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnSaveChanges, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtDCorreoE, javax.swing.GroupLayout.PREFERRED_SIZE, 219, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel21)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(38, 38, 38)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtDCorreoE)
                                     .addComponent(txtDNombreUsuario)
                                     .addComponent(txtDNumCel)
                                     .addComponent(txtDPtosAcum)
-                                    .addComponent(txtDNumTarjeta, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE))))))
-                .addGap(200, 200, 200))
+                                    .addComponent(txtDNumTarjeta, javax.swing.GroupLayout.DEFAULT_SIZE, 219, Short.MAX_VALUE)
+                                    .addComponent(txtDPassword))))
+                        .addGap(200, 200, 200))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSaveChanges)
+                        .addGap(197, 197, 197))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -162,29 +234,33 @@ public class Window extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
-                    .addComponent(txtDNombreUsuario))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtDCorreoE, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtDNumCel)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 41, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtDPtosAcum)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 38, Short.MAX_VALUE)
-                    .addComponent(txtDNumTarjeta))
+                    .addComponent(txtDNombreUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnEdit)
-                .addGap(30, 30, 30)
-                .addComponent(btnSaveChanges, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtDPassword)
+                    .addComponent(jLabel21))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtDNumCel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtDPtosAcum, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtDNumTarjeta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtDCorreoE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnEdit)
+                    .addComponent(btnSaveChanges, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(58, 58, 58))
         );
 
@@ -372,7 +448,7 @@ public class Window extends javax.swing.JPanel {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel14)
                             .addComponent(jLabel15))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 3, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)))
                 .addGap(26, 26, 26)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -457,9 +533,9 @@ public class Window extends javax.swing.JPanel {
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(170, 170, 170)
+                .addGap(204, 204, 204)
                 .addComponent(btnCerrarSesion)
-                .addContainerGap(230, Short.MAX_VALUE))
+                .addContainerGap(199, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Cerrar Sesion", jPanel4);
@@ -503,77 +579,85 @@ public class Window extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-        //AQUI OBTIENE EL NOMBRE ANTES DE MODIFICAR 
-        editU.setNombreEU(txtDNombreUsuario.getText());
+        oldTarjeta = this.txtDNumTarjeta.getText();
+        this.btnEdit.setVisible(false);
         this.btnSaveChanges.setVisible(true);
         this.txtDNombreUsuario.setEditable(true);
         this.txtDCorreoE.setEditable(true);
         this.txtDNumCel.setEditable(true);
         this.txtDNumTarjeta.setEditable(true);
+        this.txtDPassword.setEditable(true);
+    
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void btnSaveChangesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveChangesActionPerformed
-        /*A*/
+        String u = null;
+        if(this.txtDNumTarjeta.getText().equals(oldTarjeta)){
+            u = this.editUsuario(false);
+            this.changes(u);
+        }else{//se quiere cambiar la tarjeta
+            String r = null;
+            try {
+                //Conecta
+                conex = DriverManager.getConnection("jdbc:sqlserver://DESKTOP-KT6L84G:1433;databaseName=BEEL_BALAM", "sa", "2020640576");
+                //Busca el usuario
+                stm = conex.prepareCall("{call CHECK_TARJETA(?)}");
+                stm.setString(1, this.txtDNumTarjeta.getText());
+                rs = stm.executeQuery();
+                if(rs.next())r = rs.getString(1);
+                if(r.equals("E")){//ya existe la tarjeta--> se aplica un editUsuario()
+                    u = this.editUsuario(false);
+                }else{ //no existe la tarjeta, se deben agregar sus datos
+                    panelTarjeta = new PanelTarjeta2();
+                    panelTarjeta.numT = this.txtDNumTarjeta.getText();
+                    panelTarjeta.setBounds(this.getBounds());
+                    this.removeAll();
+                    this.add(panelTarjeta);
+                    this.updateUI();
+                    u = this.editUsuario(true);
+                }
+                changes(u);
+            } catch (SQLException ex) {
+                System.out.println("ERROR");
+            }
+        }
         
+    }//GEN-LAST:event_btnSaveChangesActionPerformed
+
+    public void changes(String u){
         this.btnSaveChanges.setVisible(false);
         this.txtDNombreUsuario.setEditable(false);
         this.txtDCorreoE.setEditable(false);
         this.txtDNumCel.setEditable(false);
         this.txtDNumTarjeta.setEditable(false);
-        
-        
-        editU= new ProcEditarUsuario();
-        boolean v = false; 
-        if((txtDNombreUsuario.getText().length()>25)||
-                (txtDCorreoE.getText().length()>35)||
-                (txtDNumCel.getText().length()>14)||
-                (txtDNumTarjeta.getText().length()>17)){
-            JOptionPane.showMessageDialog(null, "¡Error! Alguno o varios datos son incorrectos (demasiado largo)");
-            txtDNombreUsuario.setText(" ");
-            txtDCorreoE.setText(" ");
-            txtDNumCel.setText(" ");
-            txtDNumTarjeta.setText(" ");
-            v = true;
-        }
-        if(!v){
-            editU.setNewNombreEU(txtDNombreUsuario.getText());
-            editU.setNewCorreoEU(txtDCorreoE.getText());
-            editU.setNewCelEU(txtDNumCel.getText());
-            editU.setNewNumTarjetaEU(txtDNumTarjeta.getText());
-            
-            //NOTAAAA: FALTA HACER MAS SET ANTES DE PODER LLAMAR CORRECTAMENTE AL 
-            //PROC ALMACENADO DE EDITAR 
-            editU.hacerConexionEditUsuario();          
-        }
-        
-        /*
-        
-        String u_nombre;
-        String u_correo;
-        String u_numCel;
-        String u_tarjeta;
-        
-        boolean v = false;
-        
-        u_nombre = this.txtDNombreUsuario.getText();
-        u_correo = this.txtDCorreoE.getText();
-        u_numCel = this.txtDNumCel.getText();
-        u_tarjeta = this.txtDNumTarjeta.getText();
-        
-        if((u_nombre.length()>25)||(u_correo.length()>35)||(u_numCel.length()>14)||(u_tarjeta.length()>17)){
-            JOptionPane.showMessageDialog(null, "Error! Datos ingresados incorrectos");
-            this.txtDNombreUsuario.setText(" ");
-            this.txtDCorreoE.setText(" ");
-            this.txtDNumCel.setText(" ");
-            this.txtDNumTarjeta.setText(" ");
-            v = true;
-        } 
-        
-        if(!v){
-            //JOptionPane.showMessageDialog(null, "Datos guardados");
-        }*/
-    }//GEN-LAST:event_btnSaveChangesActionPerformed
+        this.txtDPassword.setEditable(false);
 
+        System.out.println(u);
+        if(u.equals("SC")){ //sin cambios en el nombre del usuario
+            this.getData(this.getUser(),2);
+            JOptionPane.showMessageDialog(null, "Sin cambios en el nombre del usuario");
+        }
+        else if(u.equals("UYE")) {//no se cambia el usuario, porque ya existe
+            JOptionPane.showMessageDialog(null, "Usuario no válido");
+            this.getData(this.getUser(),2);
+        }
+        else {//se cambió el usuario
+            JOptionPane.showMessageDialog(null, "Usuario cambiado con exito");
+            this.setUser(u);
+            this.getData(u,2);
+        }
+
+        System.out.println("Usuario = "+this.user);
+    }
+    
+    public void setUser(String u){
+        this.user = u;
+    }
+    
+    public String getUser(){
+        return this.user;
+    }
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
        
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -604,12 +688,108 @@ public class Window extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_cbTramoItemStateChanged
 
+    public void getData(String user,int n){
+        String nombre = null;
+        String contra = null;
+        String correo = null;
+        String numero = null;
+        String tarjeta = null;
+        int ptos = 0;
+        try {
+            //Conecta
+            conex = DriverManager.getConnection("jdbc:sqlserver://DESKTOP-KT6L84G:1433;databaseName=BEEL_BALAM", "sa", "2020640576");
+            //Busca el usuario
+            stm = conex.prepareCall("{call GET_USERDATA(?)}");
+            stm.setString(1, user);
+            rs = stm.executeQuery();
+            if(rs.next()){ //si encuentra el usuario, verifica que la contraseña sea correcta
+                nombre = rs.getString(1);
+                contra = rs.getString(2);
+                correo = rs.getString(3);
+                numero = rs.getString(4);
+                ptos = rs.getInt(5);
+                tarjeta = rs.getString(6);
+            }else{
+                JOptionPane.showMessageDialog(null, "Usuario no encontrado");
+            }
+            System.out.println(nombre+"/"+contra+"/"+correo+"/"+numero+"/"+ptos+"/"+tarjeta);
+            rs.close();
+            stm.close();
+            this.txtDNombreUsuario.setText(nombre);
+            this.txtDCorreoE.setText(correo);
+            this.txtDNumCel.setText(numero);
+            this.txtDPtosAcum.setText(Integer.toString(ptos));
+            this.txtDNumTarjeta.setText(tarjeta);
+            this.txtDPassword.setText(contra);
+            
+            if(n == 1) this.btnAcuerdo.setVisible(false);
+            
+        } catch (SQLException ex) {
+            System.out.println("ERROR");
+        }
+    }
+    
+    public String editUsuario(boolean v){
+        String r = null;
+        if(v){
+            System.out.println("Agrega una tarjeta");
+            try {
+                //Conecta
+                conex = DriverManager.getConnection("jdbc:sqlserver://DESKTOP-KT6L84G:1433;databaseName=BEEL_BALAM", "sa", "2020640576");
+                //Busca el usuario
+                stm = conex.prepareCall("{call EDIT_U_COMPLETE(?,?,?,?,?,?)}");
+                stm.setString(1, this.getUser());
+                stm.setString(2, this.txtDNombreUsuario.getText());
+                stm.setString(3, this.txtDPassword.getText());
+                stm.setString(4, this.txtDCorreoE.getText());
+                stm.setString(5, this.txtDNumCel.getText());
+                stm.setString(6, this.txtDNumTarjeta.getText());
+                stm.setString(7,panelTarjeta.getCVC() );//cvc
+                stm.setString(8,panelTarjeta.getpNombre() );//pN
+                stm.setString(9,panelTarjeta.getsNombre() );//sN
+                stm.setString(10,panelTarjeta.getpApellido());//pA
+                stm.setString(11,panelTarjeta.getsApellido());//sA
+                stm.setString(12,panelTarjeta.getFecha());//fecha
+                rs = stm.executeQuery();
+                if(rs.next())r = rs.getString(1);
+            } catch (SQLException ex) {
+                System.out.println("ERROR");
+            }
+        }else{
+            System.out.println("No se tiene que agregar una tarjeta");
+            try {
+                //Conecta
+                conex = DriverManager.getConnection("jdbc:sqlserver://DESKTOP-KT6L84G:1433;databaseName=BEEL_BALAM", "sa", "2020640576");
+                //Busca el usuario
+                stm = conex.prepareCall("{call EDIT_U_SIMPLE(?,?,?,?,?,?)}");
+                stm.setString(1, this.getUser());
+                stm.setString(2, this.txtDNombreUsuario.getText());
+                stm.setString(3, this.txtDPassword.getText());
+                stm.setString(4, this.txtDCorreoE.getText());
+                stm.setString(5, this.txtDNumCel.getText());
+                stm.setString(6, this.txtDNumTarjeta.getText());
+                rs = stm.executeQuery();
+                if(rs.next())r = rs.getString(1);
+            } catch (SQLException ex) {
+                System.out.println("ERROR");
+            }
+        }
+        return r;
+    }
+    
     private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField5ActionPerformed
 
+    private void btnAcuerdoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAcuerdoActionPerformed
+        String u = this.getUser();
+        this.getData(u,1);
+        this.btnEdit.setVisible(true);
+    }//GEN-LAST:event_btnAcuerdoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAcuerdo;
     private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnSaveChanges;
@@ -633,6 +813,8 @@ public class Window extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -644,9 +826,12 @@ public class Window extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
@@ -656,6 +841,7 @@ public class Window extends javax.swing.JPanel {
     private javax.swing.JTextField txtDNombreUsuario;
     private javax.swing.JTextField txtDNumCel;
     private javax.swing.JTextField txtDNumTarjeta;
+    private javax.swing.JTextField txtDPassword;
     private javax.swing.JTextField txtDPtosAcum;
     // End of variables declaration//GEN-END:variables
 }
